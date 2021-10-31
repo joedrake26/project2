@@ -1,29 +1,32 @@
-const express = require("express");
+const express = require('express');
+const fs = require('fs');
+const mysql = require('mysql');
+
+
+const json = fs.readFileSync('credentials.json', 'utf8');
+const credentials = JSON.parse(json);
 const service = express();
+
+const connection = mysql.createConnection(credentials);
+connection.connect(error => {
+    if (error) {
+      console.error(error);
+      process.exit(1);
+    }
+  });
+
+const port = 4883;
+service.listen(port, () => {
+    console.log(`We're live on port ${port}!`);
+});
+
 service.use((request, response, next) => {
     response.set('Access-Control-Allow-Origin', '*');
     next();
 });
-const port = 5000;
-const WTF = 10; // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt#description
 
-const fs = require("fs");
-const mysql = require("mysql");
 
-const json = fs.readFileSync("credentials.json", "utf8");
-const credentials = JSON.parse(json);
-
-const connection = mysql.createConnection(credentials);
-connection.connect((error) => {
-  if (error) {
-    console.error(error);
-    process.exit(1);
-  }
-});
-
-connection.end();
-
-let billNextId = 1;
+/*let billNextId = 1;
 const bills = {
     [billNextId]: {
         id: billNextId++,
@@ -39,11 +42,8 @@ const bills = {
         billtype: "water",
         amount: 50,
     },
-};
+};*/
 
-service.listen(port, () => {
-    console.log(`We're live on port ${port}!`);
-});
 
 // POST /bills that accepts a JSON body containing a new bill’s first name, last name, bill type and
 // amount. It returns a JSON structure reporting the ID assigned of the new
