@@ -8,7 +8,7 @@ const credentials = JSON.parse(json);
 const service = express();
 service.use(express.json());
 const WTF = 10;
-
+const path = require('path');
 
 const connection = mysql.createConnection(credentials);
 connection.connect(error => {
@@ -19,9 +19,17 @@ connection.connect(error => {
   });
 
 const port = 5001;
+
+service.get('/report.html', function(request, response) {
+  response.sendFile(path.join(__dirname+'/report.html'));
+});
+
 service.listen(port, () => {
     console.log(`We're live on port ${port}!`);
 });
+
+
+
 
 service.use((request, response, next) => {
     response.set('Access-Control-Allow-Origin', '*');
